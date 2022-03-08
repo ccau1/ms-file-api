@@ -1,0 +1,34 @@
+version: '3.7'
+
+services:
+  api:
+    container_name: file-api
+    build:
+      context: .
+      target: development
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - 3009:3009
+      - 9229:9229
+    command: npm run start:debug
+    # using dotenv instead
+    # env_file:
+    #   - .env
+    environment:
+      - MONGO_URL=mongodb+srv://dbuser:xSoFPbBAUBklnPVp@cluster0.j3c7x.mongodb.net
+      - PORT=3009
+    networks:
+      - file-net
+    depends_on:
+      - mongodb
+  mongodb:
+    container_name: file-mongodb
+    image: mongo:3.6.18-xenial
+    ports:
+      - 27029:27017
+    networks:
+      - file-net
+networks:
+  file-net:

@@ -1,0 +1,39 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: file-api
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  minReadySeconds: 5 
+  template:
+    metadata:
+      labels:
+        app: file-api
+    spec:
+      nodeSelector:
+        "beta.kubernetes.io/os": linux
+      containers:
+      - name: file-api
+        image: {{DOCKER_USER}}/file-api:{{TAG}}
+        ports:
+        - containerPort: 3000
+        resources:
+          requests:
+            cpu: 50m
+          limits:
+            cpu: 100m
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: file-api
+spec:
+  type: ClusterIP
+  ports:
+  - port: 3000
+  selector:
+    app: file-api
